@@ -7,13 +7,13 @@
         event: 'view_item',
         ecommerce: {
             currency: '{$currency.code|default:"USD"}',
-            value: parseFloat('{$product.pricing.minprice.price|replace:",":""|replace:".":""}') / 100,
+            value: parseFloat('{$product.pricing.minprice.price|replace:",":""}'),
             items: [{
                 item_id: '{$productinfo.id}',
                 item_name: '{$productinfo.name|escape:"javascript"}',
                 item_category: '{$productinfo.groupname|escape:"javascript"}',
                 item_brand: 'MassiveGRID',
-                price: parseFloat('{$product.pricing.minprice.price|replace:",":""|replace:".":""}') / 100,
+                price: parseFloat('{$product.pricing.minprice.price|replace:",":""}'),
                 quantity: 1
             }]
         }

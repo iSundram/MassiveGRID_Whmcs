@@ -57,7 +57,7 @@
                         event: 'purchase',
                         ecommerce: {
                             transaction_id: '{$orderid}',
-                            value: parseFloat('{$total|replace:",":""|replace:".":""}') / 100,
+                            value: parseFloat('{$total|replace:",":""}'),
                             currency: '{$currency.code|default:"USD"}',
                             coupon: '{if $promocode}{$promocode}{/if}',
                             items: [
@@ -67,7 +67,7 @@
                                     item_name: '{$prod.name|escape:"javascript"}',
                                     item_category: '{$prod.groupname|escape:"javascript"}',
                                     item_brand: 'MassiveGRID',
-                                    price: parseFloat('{$prod.price|replace:",":""|replace:".":""}') / 100,
+                                    price: parseFloat('{$prod.price|replace:",":""}'),
                                     quantity: {$prod.quantity|default:1}
                                 }{if !$smarty.foreach.loop.last},{/if}
                                 {/foreach}
@@ -77,7 +77,7 @@
                                     item_name: '{$domainname|escape:"javascript"}',
                                     item_category: 'Domain',
                                     item_brand: 'MassiveGRID',
-                                    price: parseFloat('{$domainfirstpaymentamount|replace:",":""|replace:".":""}') / 100,
+                                    price: parseFloat('{$domainfirstpaymentamount|replace:",":""}'),
                                     quantity: 1
                                 }
                                 {/if}
@@ -89,7 +89,7 @@
                     if (typeof gtag !== 'undefined') {
                         gtag('event', 'purchase', {
                             transaction_id: '{$orderid}',
-                            value: parseFloat('{$total|replace:",":""|replace:".":""}') / 100,
+                            value: parseFloat('{$total|replace:",":""}'),
                             currency: '{$currency.code|default:"USD"}',
                             items: [
                                 {foreach from=$products item=prod name=loop}
@@ -97,7 +97,7 @@
                                     item_id: '{$prod.id}',
                                     item_name: '{$prod.name|escape:"javascript"}',
                                     item_category: '{$prod.groupname|escape:"javascript"}',
-                                    price: parseFloat('{$prod.price|replace:",":""|replace:".":""}') / 100,
+                                    price: parseFloat('{$prod.price|replace:",":""}'),
                                     quantity: {$prod.quantity|default:1}
                                 }{if !$smarty.foreach.loop.last},{/if}
                                 {/foreach}

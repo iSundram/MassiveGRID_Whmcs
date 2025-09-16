@@ -16,7 +16,7 @@
             event: 'view_cart',
             ecommerce: {
                 currency: '{$currency.code|default:"USD"}',
-                value: parseFloat('{$total|replace:",":""|replace:".":""}') / 100,
+                value: parseFloat('{$total|replace:",":""}'),
                 items: [
                     {foreach from=$products item=prod name=loop}
                     {
@@ -24,7 +24,7 @@
                         item_name: '{$prod.name|escape:"javascript"}',
                         item_category: '{$prod.groupname|escape:"javascript"}',
                         item_brand: 'MassiveGRID',
-                        price: parseFloat('{$prod.price|replace:",":""|replace:".":""}') / 100,
+                        price: parseFloat('{$prod.price|replace:",":""}'),
                         quantity: {$prod.quantity|default:1}
                     }{if !$smarty.foreach.loop.last},{/if}
                     {/foreach}

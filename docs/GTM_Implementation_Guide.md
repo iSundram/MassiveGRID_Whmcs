@@ -244,10 +244,10 @@ dataLayer.push({
 ### Price Formatting
 Prices are cleaned using this pattern:
 ```smarty
-parseFloat('{$price|replace:",":""|replace:".":""}') / 100
+parseFloat('{$price|replace:",":""}')
 ```
 
-This handles different currency formats and converts to decimal values.
+This removes commas from currency values (e.g., "1,000.99" becomes "1000.99") and converts to a proper numeric value for JavaScript processing. The decimal points are preserved for accurate monetary calculations.
 
 ### JavaScript Escaping
 All text variables are escaped for JavaScript:
