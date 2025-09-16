@@ -3,6 +3,39 @@
     var statesTab = 10;
     // Do not enforce state input client side
     var stateNotRequired = true;
+    
+    // GTM/GA4 Begin Checkout Event
+    window.dataLayer = window.dataLayer || [];
+    dataLayer.push({
+        event: 'begin_checkout',
+        ecommerce: {
+            currency: '{$currency.code|default:"USD"}',
+            value: parseFloat('{$total|replace:",":""|replace:".":""}') / 100,
+            coupon: '{if $promocode}{$promocode}{/if}',
+            items: [
+                {foreach from=$products item=prod name=loop}
+                {
+                    item_id: '{$prod.id}',
+                    item_name: '{$prod.name|escape:"javascript"}',
+                    item_category: '{$prod.groupname|escape:"javascript"}',
+                    item_brand: 'MassiveGRID',
+                    price: parseFloat('{$prod.price|replace:",":""|replace:".":""}') / 100,
+                    quantity: {$prod.quantity|default:1}
+                }{if !$smarty.foreach.loop.last},{/if}
+                {/foreach}
+                {if $domainname}
+                ,{
+                    item_id: 'domain',
+                    item_name: '{$domainname|escape:"javascript"}',
+                    item_category: 'Domain',
+                    item_brand: 'MassiveGRID',
+                    price: parseFloat('{$domainfirstpaymentamount|replace:",":""|replace:".":""}') / 100,
+                    quantity: 1
+                }
+                {/if}
+            ]
+        }
+    });
 </script>
 {include file="orderforms/standard_cart/common.tpl"}
 <script type="text/javascript" src="{$BASE_PATH_JS}/StatesDropdown.js"></script>
@@ -748,5 +781,66 @@
 <script type="text/javascript" src="{$BASE_PATH_JS}/jquery.payment.js"></script>
 <script>
     var hideCvcOnCheckoutForExistingCard = '{if $canUseCreditOnCheckout && $applyCredit && ($creditBalance->toNumeric() >= $total->toNumeric())}1{else}0{/if}';
+    
+    // GTM/GA4 Payment Info Tracking
+    window.dataLayer = window.dataLayer || [];
+    
+    // Track when payment method is selected
+    document.addEventListener('DOMContentLoaded', function() {
+        var paymentMethodInputs = document.querySelectorAll('input[name="paymentmethod"]');
+        paymentMethodInputs.forEach(function(input) {
+            input.addEventListener('change', function() {
+                var paymentType = this.getAttribute('data-payment-type') || 'unknown';
+                
+                dataLayer.push({
+                    event: 'add_payment_info',
+                    ecommerce: {
+                        currency: '{$currency.code|default:"USD"}',
+                        value: parseFloat('{$total|replace:",":""|replace:".":""}') / 100,
+                        payment_type: paymentType,
+                        items: [
+                            {foreach from=$products item=prod name=loop}
+                            {
+                                item_id: '{$prod.id}',
+                                item_name: '{$prod.name|escape:"javascript"}',
+                                item_category: '{$prod.groupname|escape:"javascript"}',
+                                item_brand: 'MassiveGRID',
+                                price: parseFloat('{$prod.price|replace:",":""|replace:".":""}') / 100,
+                                quantity: {$prod.quantity|default:1}
+                            }{if !$smarty.foreach.loop.last},{/if}
+                            {/foreach}
+                        ]
+                    }
+                });
+            });
+        });
+        
+        // Track shipping info when country/state is selected
+        var shippingInputs = document.querySelectorAll('select[name="country"], select[name="state"]');
+        shippingInputs.forEach(function(input) {
+            input.addEventListener('change', function() {
+                dataLayer.push({
+                    event: 'add_shipping_info',
+                    ecommerce: {
+                        currency: '{$currency.code|default:"USD"}',
+                        value: parseFloat('{$total|replace:",":""|replace:".":""}') / 100,
+                        shipping_tier: 'Standard',
+                        items: [
+                            {foreach from=$products item=prod name=loop}
+                            {
+                                item_id: '{$prod.id}',
+                                item_name: '{$prod.name|escape:"javascript"}',
+                                item_category: '{$prod.groupname|escape:"javascript"}',
+                                item_brand: 'MassiveGRID',
+                                price: parseFloat('{$prod.price|replace:",":""|replace:".":""}') / 100,
+                                quantity: {$prod.quantity|default:1}
+                            }{if !$smarty.foreach.loop.last},{/if}
+                            {/foreach}
+                        ]
+                    }
+                });
+            });
+        });
+    });
 </script>
 {include file="orderforms/standard_cart/recommendations-modal.tpl"}

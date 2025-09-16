@@ -111,4 +111,39 @@
     </div>
 </div>
 
+{* GTM/GA4 Add to Cart Event Tracking *}
+<script>
+    window.dataLayer = window.dataLayer || [];
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Track add to cart events when order buttons are clicked
+        document.querySelectorAll('.btn-order-now').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var productId = this.id.replace('-order-button', '');
+                var productName = document.getElementById(productId + '-name') ? document.getElementById(productId + '-name').textContent : '';
+                var productPrice = this.closest('.product').querySelector('.price') ? this.closest('.product').querySelector('.price').textContent : '0';
+                
+                // Clean price value
+                var priceValue = parseFloat(productPrice.replace(/[^0-9.]/g, '')) || 0;
+                
+                dataLayer.push({
+                    event: 'add_to_cart',
+                    ecommerce: {
+                        currency: '{$currency.code|default:"USD"}',
+                        value: priceValue,
+                        items: [{
+                            item_id: productId.replace('product', '').replace('bundle', ''),
+                            item_name: productName,
+                            item_category: '{$productGroup.name|escape:"javascript"}',
+                            item_brand: 'MassiveGRID',
+                            price: priceValue,
+                            quantity: 1
+                        }]
+                    }
+                });
+            });
+        });
+    });
+</script>
+
 {include file="orderforms/standard_cart/recommendations-modal.tpl"}

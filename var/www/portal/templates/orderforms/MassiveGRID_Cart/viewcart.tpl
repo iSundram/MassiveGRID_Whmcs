@@ -8,6 +8,30 @@
         // Define state tab index value
         var statesTab = 10;
         var stateNotRequired = true;
+        
+        // GTM/GA4 View Cart Event
+        window.dataLayer = window.dataLayer || [];
+        {if $products}
+        dataLayer.push({
+            event: 'view_cart',
+            ecommerce: {
+                currency: '{$currency.code|default:"USD"}',
+                value: parseFloat('{$total|replace:",":""|replace:".":""}') / 100,
+                items: [
+                    {foreach from=$products item=prod name=loop}
+                    {
+                        item_id: '{$prod.id}',
+                        item_name: '{$prod.name|escape:"javascript"}',
+                        item_category: '{$prod.groupname|escape:"javascript"}',
+                        item_brand: 'MassiveGRID',
+                        price: parseFloat('{$prod.price|replace:",":""|replace:".":""}') / 100,
+                        quantity: {$prod.quantity|default:1}
+                    }{if !$smarty.foreach.loop.last},{/if}
+                    {/foreach}
+                ]
+            }
+        });
+        {/if}
     </script>
     {include file="orderforms/standard_cart/common.tpl"}
     <script type="text/javascript" src="{$BASE_PATH_JS}/StatesDropdown.js"></script>

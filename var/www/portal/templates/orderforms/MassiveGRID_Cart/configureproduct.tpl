@@ -1,4 +1,25 @@
 {include file="orderforms/standard_cart/common.tpl"}
+
+{* GTM/GA4 View Item Event *}
+<script>
+    window.dataLayer = window.dataLayer || [];
+    dataLayer.push({
+        event: 'view_item',
+        ecommerce: {
+            currency: '{$currency.code|default:"USD"}',
+            value: parseFloat('{$product.pricing.minprice.price|replace:",":""|replace:".":""}') / 100,
+            items: [{
+                item_id: '{$productinfo.id}',
+                item_name: '{$productinfo.name|escape:"javascript"}',
+                item_category: '{$productinfo.groupname|escape:"javascript"}',
+                item_brand: 'MassiveGRID',
+                price: parseFloat('{$product.pricing.minprice.price|replace:",":""|replace:".":""}') / 100,
+                quantity: 1
+            }]
+        }
+    });
+</script>
+
 <style type="text/css">
     {literal}
     .tooltip-inner {

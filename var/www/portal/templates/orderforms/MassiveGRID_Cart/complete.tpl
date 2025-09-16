@@ -49,28 +49,61 @@
             {/foreach}
 
             {if $ispaid}
-                <!-- Enter any HTML code which should be displayed when a user has completed checkout here -->
-                <!-- Common uses of this include conversion and affiliate tracking scripts -->
+                <!-- GTM/GA4 Enhanced Ecommerce Purchase Tracking -->
                 <script>
+                    // GA4 Purchase Event
+                    window.dataLayer = window.dataLayer || [];
                     dataLayer.push({
-                    event: 'purchase',
-                    ecommerce: {
-                        transaction_id: '{$orderid}',
-                        value: parseFloat('{$total|replace:",":""}'),
-                        currency: '{$currency|default:"USD"}',
-                        items: [
-                    {foreach from=$products item=prod name=loop}
-                    {
-                    item_id: '{$prod.id}',
-                    item_name: '{$prod.name}',
-                    item_category: '{$prod.groupname}',
-                    price: parseFloat('{$prod.price|replace:",":""}'),
-                    quantity: {$prod.quantity|default:1}
-                    }{if !$smarty.foreach.loop.last},{/if}
-                    {/foreach}
-                        ]
-                    }
+                        event: 'purchase',
+                        ecommerce: {
+                            transaction_id: '{$orderid}',
+                            value: parseFloat('{$total|replace:",":""|replace:".":""}') / 100,
+                            currency: '{$currency.code|default:"USD"}',
+                            coupon: '{if $promocode}{$promocode}{/if}',
+                            items: [
+                                {foreach from=$products item=prod name=loop}
+                                {
+                                    item_id: '{$prod.id}',
+                                    item_name: '{$prod.name|escape:"javascript"}',
+                                    item_category: '{$prod.groupname|escape:"javascript"}',
+                                    item_brand: 'MassiveGRID',
+                                    price: parseFloat('{$prod.price|replace:",":""|replace:".":""}') / 100,
+                                    quantity: {$prod.quantity|default:1}
+                                }{if !$smarty.foreach.loop.last},{/if}
+                                {/foreach}
+                                {if $domainname}
+                                ,{
+                                    item_id: 'domain',
+                                    item_name: '{$domainname|escape:"javascript"}',
+                                    item_category: 'Domain',
+                                    item_brand: 'MassiveGRID',
+                                    price: parseFloat('{$domainfirstpaymentamount|replace:",":""|replace:".":""}') / 100,
+                                    quantity: 1
+                                }
+                                {/if}
+                            ]
+                        }
                     });
+
+                    // Also send to Google Analytics (legacy)
+                    if (typeof gtag !== 'undefined') {
+                        gtag('event', 'purchase', {
+                            transaction_id: '{$orderid}',
+                            value: parseFloat('{$total|replace:",":""|replace:".":""}') / 100,
+                            currency: '{$currency.code|default:"USD"}',
+                            items: [
+                                {foreach from=$products item=prod name=loop}
+                                {
+                                    item_id: '{$prod.id}',
+                                    item_name: '{$prod.name|escape:"javascript"}',
+                                    item_category: '{$prod.groupname|escape:"javascript"}',
+                                    price: parseFloat('{$prod.price|replace:",":""|replace:".":""}') / 100,
+                                    quantity: {$prod.quantity|default:1}
+                                }{if !$smarty.foreach.loop.last},{/if}
+                                {/foreach}
+                            ]
+                        });
+                    }
                 </script>
             {/if}
 
